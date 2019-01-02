@@ -3,6 +3,8 @@ var ctx = document.getElementById('ctx').getContext('2d');
 
 var WIDTH = 500;
 var HEIGHT = 500;
+var numOfTiles;
+var tileList;
 ctx.font = '20 px Calibri';
 
 var ball = {
@@ -23,6 +25,12 @@ var base = {
     pressingLeft: false,
     pressingRight: false
 };
+
+var tile = {
+    height: 20,
+    width: 40,
+    color: 'orange'
+}
 
 document.onkeydown = function(event){
     if (event.keyCode == 37){
@@ -57,6 +65,13 @@ var drawBase = function() {
     ctx.restore();
 };
 
+drawTile = function(t, i){
+    ctx.save();
+    ctx.fillStyle = tile.color;
+    ctx.fillRect(t.x, t.y, tile.width, tile.height);
+    ctx.restore();
+}
+
 var updateBasePosition = function(){
     if (base.pressingLeft){
         base.x = base.x - 5;
@@ -89,6 +104,7 @@ var testCollision = function(base,ball){
 
 var update = function(){
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    tileList.forEach(drawTile);
     drawBall();
     drawBase();
 
@@ -101,9 +117,29 @@ var update = function(){
 }
 
 var startGame = function() {
+    //set position of ball and base
     base.x = 150;
     ball.x = base.x + 100;
     ball.y = base.y - 100;
+    
+    //set position of tiles
+    numOfTiles = 0;
+    var tileX = 5;
+    var tileY = 5;
+    tileList = [];
+    for (var i=1; i<6; i++){
+        //each iteration reset val of tileX to 5
+        tileX = 5;
+        for (var j=1; j<=11; j++){
+            tileList[numOfTiles] = {
+                x: tileX, 
+                y: tileY
+            }
+            numOfTiles++;
+            tileX += 45;
+        }
+        tileY += 25;
+    }
     setInterval(update, 20);
 }
 
