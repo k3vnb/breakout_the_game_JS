@@ -1,13 +1,16 @@
 
+// Setup canvas
 var ctx = document.getElementById('ctx').getContext('2d');
-
 var WIDTH = 500;
 var HEIGHT = 500;
+ctx.font = '20 px Calibri';
+
+//global variables
 var numOfTiles;
 var tileList;
 var score;
-ctx.font = '20 px Calibri';
 
+//describe elements
 var ball = {
     x: 0,
     y: 0,
@@ -23,9 +26,11 @@ var base = {
     height: 20,
     width: 100,
     color: 'red',
+    lives: 3,
     pressingLeft: false,
     pressingRight: false
 };
+
 
 var tile = {
     height: 20,
@@ -33,23 +38,8 @@ var tile = {
     color: 'orange'
 }
 
-document.onkeydown = function(event){
-    if (event.keyCode == 37){
-        base.pressingLeft = true;
-        base.pressingRight = false;
-    } else if (event.keyCode == 39) {
-        base.pressingRight = true;
-        base.pressingLeft = false;
-    }
-}
-document.onkeyup = function(event){
-    if (event.keyCode == 37){
-        base.pressingLeft = false
-    } else if (event.keyCode == 39){
-        base.pressingRight = false;
-    }
-}
 
+//create elements in DOM
 drawBall = function() {
     ctx.save();
     ctx.fillStyle = ball.color;
@@ -73,6 +63,24 @@ drawTile = function(t, i){
     ctx.restore();
 }
 
+//move base left & right
+document.onkeydown = function(event){
+    if (event.keyCode == 37){
+        base.pressingLeft = true;
+        base.pressingRight = false;
+    } else if (event.keyCode == 39) {
+        base.pressingRight = true;
+        base.pressingLeft = false;
+    }
+}
+document.onkeyup = function(event){
+    if (event.keyCode == 37){
+        base.pressingLeft = false
+    } else if (event.keyCode == 39){
+        base.pressingRight = false;
+    }
+}
+
 var updateBasePosition = function(){
     if (base.pressingLeft){
         base.x = base.x - 5;
@@ -87,6 +95,7 @@ var updateBasePosition = function(){
     }
 }
 
+//move ball 
 var updateBallPosition = function(){
     ball.x += ball.spdX;
     ball.y += ball.spdY;
@@ -94,10 +103,15 @@ var updateBallPosition = function(){
     if (ball.x > WIDTH || ball.x < 0){
         ball.spdX = -ball.spdX;
     }
-    if (ball.y > WIDTH || ball.y < 0){
+    if (ball.y < 0){
         ball.spdY = -ball.spdY;
     }
+    if (ball.y > HEIGHT){
+        ball.spdY = -ball.spdY;
+        base.lives--;
+    }
 }
+
 var testCollision = function(base,ball){
     let ballBody = 2*ball.radius;
     return ((base.x < ball.x + ballBody) && 
@@ -107,6 +121,7 @@ var testCollision = function(base,ball){
             );
 };
 
+// when ball hits tile
 var testCollisionTile = function(t, ball){
     let ballBody = 2*ball.radius;
     return ((t.x < ball.x + ballBody) && 
@@ -135,11 +150,14 @@ var update = function(){
     }
 
     ctx.fillText('Score: ' + score, 5, 490);
+    ctx.fillText('Lives: ' + base.lives, 430, 490);
 
     updateBasePosition();
     updateBallPosition();
 }
 
+
+// main game function runner
 var startGame = function() {
     score = 0;
 
