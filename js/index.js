@@ -5,6 +5,7 @@ var WIDTH = 500;
 var HEIGHT = 500;
 var numOfTiles;
 var tileList;
+var score;
 ctx.font = '20 px Calibri';
 
 var ball = {
@@ -99,8 +100,21 @@ var updateBallPosition = function(){
 }
 var testCollision = function(base,ball){
     let ballBody = 2*ball.radius;
-    return ((base.x < ball.x + ballBody) && (ball.x < base.x + base.width) && (base.y < ball.y + ballBody) && (ball.y < base.y + base.height));
+    return ((base.x < ball.x + ballBody) && 
+            (ball.x < base.x + base.width) && 
+            (base.y < ball.y + ballBody) && 
+            (ball.y < base.y + base.height)
+            );
 };
+
+var testCollisionTile = function(t, ball){
+    let ballBody = 2*ball.radius;
+    return ((t.x < ball.x + ballBody) && 
+            (ball.x < t.x + tile.width) && 
+            (t.y < ball.y + ballBody) && 
+            (ball.y < t.y + tile.height)
+            );
+}
 
 var update = function(){
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -112,11 +126,23 @@ var update = function(){
         ball.spdY = -ball.spdY;
     }
 
+    for(key in tileList){
+        if (testCollisionTile(tileList[key], ball)){
+            delete tileList[key];
+            ball.spdY = -ball.spdY;
+            score += 5;
+        }
+    }
+
+    ctx.fillText('Score: ' + score, 5, 490);
+
     updateBasePosition();
     updateBallPosition();
 }
 
 var startGame = function() {
+    score = 0;
+
     //set position of ball and base
     base.x = 150;
     ball.x = base.x + 100;
@@ -127,6 +153,7 @@ var startGame = function() {
     var tileX = 5;
     var tileY = 5;
     tileList = [];
+    
     for (var i=1; i<6; i++){
         //each iteration reset val of tileX to 5
         tileX = 5;
