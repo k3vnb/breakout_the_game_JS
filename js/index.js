@@ -82,13 +82,22 @@ var updateBallPosition = function(){
         ball.spdY = -ball.spdY;
     }
 }
+var testCollision = function(base,ball){
+    let ballBody = 2*ball.radius;
+    return ((base.x < ball.x + ballBody) && (ball.x < base.x + base.width) && (base.y < ball.y + ballBody) && (ball.y < base.y + base.height));
+};
 
 var update = function(){
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
-    updateBasePosition();
-    updateBallPosition();
     drawBall();
     drawBase();
+
+    if (testCollision(base, ball)){
+        ball.spdY = -ball.spdY;
+    }
+
+    updateBasePosition();
+    updateBallPosition();
 }
 
 var startGame = function() {
